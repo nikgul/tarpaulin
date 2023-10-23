@@ -7,18 +7,18 @@
 [![Developers Wiki](https://img.shields.io/badge/development-wiki-yellowgreen.svg)](https://github.com/xd009642/tarpaulin/wiki/Developers)
 [![Coverage Status](https://coveralls.io/repos/github/xd009642/tarpaulin/badge.svg?branch=develop)](https://coveralls.io/github/xd009642/tarpaulin?branch=develop)
 
-Tarpaulin is a code coverage reporting tool for the Cargo build system, named 
+Tarpaulin is a code coverage reporting tool for the Cargo build system, named
 for a waterproof cloth used to cover cargo on a ship.
 
 Currently, tarpaulin
-provides working line coverage, and while fairly reliable, may still contain 
+provides working line coverage, and while fairly reliable, may still contain
 minor inaccuracies in the results. A lot of work has been done to get it
 working on a wide range of projects, but unique combinations of packages
 and build features can cause issues, so please report anything
 you find that's wrong. Also, check out our roadmap for planned features.
 
 On Linux, Tarpaulin's default tracing backend is still Ptrace and will only work
-on x86\_64 processors. This can be changed to the llvm coverage instrumentation
+on x86_64 processors. This can be changed to the llvm coverage instrumentation
 with `--engine llvm`. For Mac and Windows, this is the default collection
 method.
 
@@ -69,6 +69,7 @@ Options:
       --skip-clean                 The opposite of --force-clean
       --force-clean                Adds a clean stage to work around cargo bugs that may affect coverage results
       --fail-under <PERCENTAGE>    Sets a percentage threshold for failure ranging from 0-100, if coverage is below exit with a non-zero code
+      --fail-decreasing            Fail if the covarage percentage is decreasing
   -b, --branch                     Branch coverage: NOT IMPLEMENTED
   -f, --forward                    Forwards unexpected signals to test. This is now the default behaviour
       --coveralls <KEY>            Coveralls key, either the repo token, or if you're using travis use $TRAVIS_JOB_ID and specify travis-{ci|pro} in --ciserver
@@ -120,12 +121,12 @@ caused by SIGSTOP, SIGSEGV or SIGILL to the test binary.
 ### Nuances with LLVM Coverage
 
 Despite generally being far more accurate there are some nuances with the LLVM
-coverage instrumentation. 
+coverage instrumentation.
 
 1. If a test has a non-zero exit code coverage data isn't returned
 2. Some areas of thread unsafety
 3. Unable to handle fork and similar syscalls (one process will overwrite anothers
-profraw file)
+   profraw file)
 
 In these cases coverage results may differ a lot between ptrace and llvm and llvm
 coverage may be a worse choice. Things like doc tests with the `should_panic`
@@ -141,13 +142,13 @@ lead to coverage not working. In this instance, please raise an issue detailing
 your setup and an example project and I'll attempt to fix it (please link us to
 a repo and the commit containing your project and paste the verbose output).
 
-* Line coverage
-* Full compatibility with cargo test CLI arguments
-* Uploading coverage to <https://coveralls.io> or <https://codecov.io>
-* HTML report generation and other coverage report types
-* Coverage of tests, doctests, benchmarks and examples possible
-* Excluding irrelevant files from coverage
-* Config file for mutually exclusive coverage settings (see `Config file` section for details)
+- Line coverage
+- Full compatibility with cargo test CLI arguments
+- Uploading coverage to <https://coveralls.io> or <https://codecov.io>
+- HTML report generation and other coverage report types
+- Coverage of tests, doctests, benchmarks and examples possible
+- Excluding irrelevant files from coverage
+- Config file for mutually exclusive coverage settings (see `Config file` section for details)
 
 ## Usage
 
@@ -175,21 +176,21 @@ cargo binstall cargo-tarpaulin
 
 ### Environment Variables
 
-When tarpaulin runs your tests it strives to run them in the same environment as if they were ran via cargo test. 
+When tarpaulin runs your tests it strives to run them in the same environment as if they were ran via cargo test.
 In order to achieve this it sets the following environment variables when executing the test binaries:
 
-- **RUST_BACKTRACE**      - _When --verbose flag is used_
-- **CARGO_MANIFEST_DIR**  - _Path to Cargo.toml From --root | --manifest-path or guessed from the current or parent directory_
-- **CARGO_PKG_NAME**      - _From Cargo.toml_
-- **CARGO_PKG_AUTHORS**   - _From Cargo.toml_
-- **CARGO_PKG_VERSION**   - _From Cargo.toml_
-- **LLVM_PROFILE_FILE**   - _Used for LLVM coverage_
+- **RUST_BACKTRACE** - _When --verbose flag is used_
+- **CARGO_MANIFEST_DIR** - _Path to Cargo.toml From --root | --manifest-path or guessed from the current or parent directory_
+- **CARGO_PKG_NAME** - _From Cargo.toml_
+- **CARGO_PKG_AUTHORS** - _From Cargo.toml_
+- **CARGO_PKG_VERSION** - _From Cargo.toml_
+- **LLVM_PROFILE_FILE** - _Used for LLVM coverage_
 
 ### Cargo Manifest
 
 In order for tarpaulin to construct the Cargo environment correctly, tarpaulin needs to find Cargo.toml by either:
 
-- Using *--root* or *--manifest-path* or
+- Using _--root_ or _--manifest-path_ or
 - By invoking Cargo from the current working directory within the project holding Cargo.toml manifest or
 - By invoking Cargo from a sub-directory within the project
 
@@ -235,7 +236,7 @@ Jan 30 21:43:35.563  INFO cargo_tarpaulin::report: Coverage Results:
 || Tested/Total Lines:
 || src/lib.rs: 3/4
 || src/unused.rs: 0/3
-|| 
+||
 42.86% coverage, 3/7 lines covered
 ```
 
@@ -266,7 +267,7 @@ Jan 30 21:45:38.990  INFO cargo_tarpaulin::report: Coverage Results:
 || Tested/Total Lines:
 || src/lib.rs: 3/4 +0.00%
 || src/unused.rs: 3/3 +100.00%
-|| 
+||
 85.71% coverage, 6/7 lines covered, +42.86% change in coverage
 ```
 
@@ -332,7 +333,7 @@ fn ignored_by_tarpaulin() {
 There is also nightly support for using tool attributes with tarpaulin for
 skip. For example:
 
-```Rust 
+```Rust
 #![feature(register_tool)]
 #![register_tool(tarpaulin)]
 
@@ -390,9 +391,9 @@ language: rust
 # tarpaulin has only been tested on bionic and trusty other distros may have issues
 dist: bionic
 addons:
-    apt:
-        packages:
-            - libssl-dev
+  apt:
+    packages:
+      - libssl-dev
 cache: cargo
 rust:
   - stable
@@ -408,9 +409,9 @@ before_script: |
   fi
 
 script:
-- cargo clean
-- cargo build
-- cargo test
+  - cargo clean
+  - cargo build
+  - cargo test
 
 after_success: |
   if [[ "$TRAVIS_RUST_VERSION" == stable ]]; then
@@ -441,29 +442,29 @@ Example how to run coverage within `docker` with `seccomp` in GitHub Actions and
 to <codecov.io>.
 
 ```yml
-name:                           coverage
+name: coverage
 
-on:                             [push]
+on: [push]
 jobs:
   test:
-    name:                       coverage
-    runs-on:                    ubuntu-latest
+    name: coverage
+    runs-on: ubuntu-latest
     container:
-      image:                    xd009642/tarpaulin:develop-nightly
-      options:                  --security-opt seccomp=unconfined
+      image: xd009642/tarpaulin:develop-nightly
+      options: --security-opt seccomp=unconfined
     steps:
-      - name:                   Checkout repository
-        uses:                   actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name:                   Generate code coverage
+      - name: Generate code coverage
         run: |
           cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out xml
 
-      - name:                   Upload to codecov.io
-        uses:                   codecov/codecov-action@v2
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v2
         with:
           # token:                ${{secrets.CODECOV_TOKEN}} # not required for public repos
-          fail_ci_if_error:     true
+          fail_ci_if_error: true
 ```
 
 #### CircleCI
@@ -505,7 +506,7 @@ job: ...
 
 and generate a `cobertura.xml` as described under [Pycobertura](#pycobertura).
 
-  [show coverage information]: https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html
+[show coverage information]: https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html
 
 For installation add `cargo install cargo-tarpaulin -f` to the script section.
 
@@ -618,17 +619,16 @@ accuracy. If you see missing lines or files, check your compiler version.
 
 ## Roadmap
 
-* [ ] Branch coverage for tests
-* [ ] Condition coverage for tests
-* [ ] MCDC coverage reports
-* [x] LLVM coverage support
-* [ ] Support for embedded targets
-* [x] OSX support
-* [x] Windows support
+- [ ] Branch coverage for tests
+- [ ] Condition coverage for tests
+- [ ] MCDC coverage reports
+- [x] LLVM coverage support
+- [ ] Support for embedded targets
+- [x] OSX support
+- [x] Windows support
 
 ## License
 
 Tarpaulin is currently licensed under the terms of both the MIT license and the
-Apache License (Version 2.0). See LICENSE-MIT and LICENSE-APACHE for more 
+Apache License (Version 2.0). See LICENSE-MIT and LICENSE-APACHE for more
 details.
-
